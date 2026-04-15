@@ -1,0 +1,97 @@
+<template>
+    <lightning-card title="Account Rating Filter" icon-name="standard:account">
+
+        <!-- Dropdown -->
+        <div class="slds-p-around_medium slds-border_bottom">
+            <lightning-combobox
+                label="Select Rating"
+                value={rating}
+                options={options}
+                onchange={handleRatingChange}>
+            </lightning-combobox>
+        </div>
+
+        <!-- Button -->
+        <div class="slds-p-around_medium slds-align_absolute-center">
+            <lightning-button 
+                label="Show Records" 
+                onclick={handleOnClick}
+                variant="brand">
+            </lightning-button>
+        </div>
+
+        <!-- Empty State (Styled) -->
+        <template if:false={showRating}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <div class="slds-box slds-theme_default slds-text-align_center empty-box">
+                    
+                    <lightning-icon 
+                        icon-name="utility:filterList" 
+                        size="large" 
+                        class="slds-m-bottom_small">
+                    </lightning-icon>
+
+                    <p class="slds-text-heading_small slds-text-title_bold">
+                        No Rating Selected
+                    </p>
+
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_x-small">
+                        Please select a rating to view accounts
+                    </p>
+
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_medium">
+                <lightning-spinner size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Data Section -->
+        <template if:true={showRating}>
+
+            <!-- Records -->
+            <template if:true={hasAccounts}>
+                <div class="slds-p-around_medium">
+                    <template for:each={accounts} for:item="acc">
+                        <div key={acc.Id}
+                             class="slds-box slds-m-bottom_small slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                            <div>
+                                <p class="slds-text-heading_small slds-text-title_bold">
+                                    {acc.Name}
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class={acc.badgeClass}>
+                                    {acc.Rating}
+                                </span>
+                            </div>
+
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- No Records -->
+            <template if:false={hasAccounts}>
+                <div class="slds-text-align_center slds-p-around_medium">
+                    No accounts found
+                </div>
+            </template>
+
+        </template>
+
+        <!-- Error -->
+        <template if:true={error}>
+            <div class="slds-text-color_error slds-p-around_medium slds-text-align_center">
+                Error loading data
+            </div>
+        </template>
+
+    </lightning-card>
+</template>
