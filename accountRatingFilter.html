@@ -1,60 +1,73 @@
 <template>
-    <lightning-card title="Account List" icon-name="standard:account">
+    <lightning-card title="Account Rating Filter" icon-name="standard:account">
 
-        <!-- Button Section -->
-        <div class="slds-m-around_medium slds-grid slds-gutters slds-align_absolute-center">
-            <div class="slds-align_absolute-center">
-            <lightning-button 
-                label="Hot" 
-                variant="destructive"
-                onclick={isHotClicked}>
-            </lightning-button>
-            </div>
-            <div class="slds-align_absolute-center">
-            <lightning-button 
-                label="Warm" 
-                variant="brand"
-                onclick={isWarmClicked}>
-            </lightning-button>
-            </div>
-            <div class="slds-align_absolute-center">
-            <lightning-button 
-                label="Cold" 
-                variant="neutral"
-                onclick={isColdClicked}>
-            </lightning-button>
-            </div>
+        <!-- Dropdown -->
+        <div class="slds-p-around_medium slds-border_bottom">
+            <lightning-combobox
+                label="Select Rating"
+                value={rating}
+                options={options}
+                onchange={handleRatingChange}>
+            </lightning-combobox>
         </div>
 
-        <!-- Data Section -->
-        <template if:true={accounts}>
-            <div class="slds-p-horizontal_medium">
-                <template for:each={accounts} for:item="acc">
-                    
-                    <div key={acc.Id} 
-                         class="slds-box slds-box_x-small slds-m-bottom_small slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-
-                        <!-- Account Name -->
-                        <div>
-                            <p class="slds-text-heading_small">{acc.Name}</p>
-                        </div>
-
-                        <!-- Rating Badge -->
-                        <div>
-                            <span class={acc.badgeClass}>
-                                {acc.Rating}
-                            </span>
-                        </div>
-
-                    </div>
-
-                </template>
+        <!-- No selection -->
+        <template if:false={showRating}>
+            <div class="slds-text-align_center slds-p-around_medium">
+                Please select a rating
             </div>
+        </template>
+
+        <!-- Data -->
+        <template if:true={showRating}>
+
+            <!-- Loading -->
+            <template if:false={accounts}>
+                <div class="slds-align_absolute-center slds-p-around_medium">
+                    <lightning-spinner size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Records -->
+            <template if:true={accounts}>
+                <template if:true={accounts.length}>
+                    <div class="slds-p-around_medium">
+                        <template for:each={accounts} for:item="acc">
+
+                            <div key={acc.Id}
+                                 class="slds-box slds-m-bottom_small slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                                <div>
+                                    <p class="slds-text-heading_small slds-text-title_bold">
+                                        {acc.Name}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <span class={acc.badgeClass}>
+                                        {acc.Rating}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Empty -->
+                <template if:false={accounts.length}>
+                    <div class="slds-text-align_center slds-p-around_medium">
+                        No accounts found
+                    </div>
+                </template>
+            </template>
+
         </template>
 
         <!-- Error -->
         <template if:true={error}>
-            <div class="slds-text-color_error slds-p-around_medium">
+            <div class="slds-text-color_error slds-p-around_medium slds-text-align_center">
                 Error loading data
             </div>
         </template>
