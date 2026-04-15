@@ -1,49 +1,41 @@
 import { LightningElement, wire } from 'lwc';
 import getAccounts from '@salesforce/apex/AccountHelper.getAccounts';
 
-export default class AccountList extends LightningElement {
+export default class AccountRatingFilter extends LightningElement {
 
-    rating = '';       // reactive parameter
+    rating = '';
     accounts;
     error;
 
-    // Button Handlers
-    isHotClicked() {
-        this.rating = 'Hot';
+    // Dropdown options (controlled input → no user mistakes)
+    get options() {
+        return [
+            { label: 'Hot', value: 'Hot' },
+            { label: 'Warm', value: 'Warm' },
+            { label: 'Cold', value: 'Cold' }
+        ];
     }
 
-    isWarmClicked() {
-        this.rating = 'Warm';
+    handleRatingChange(event) {
+        this.rating = event.detail.value;
     }
 
-    isColdClicked() {
-        this.rating = 'Cold';
-    }
-
-    // Wire Apex with dynamic parameter
     @wire(getAccounts, { rating: '$rating' })
     wiredAccounts({ data, error }) {
 
         if (data) {
-
-            // Add SLDS badge styling dynamically
             this.accounts = data.map(acc => {
                 let badgeClass = 'slds-badge';
 
                 if (acc.Rating === 'Hot') {
                     badgeClass += ' slds-theme_error';
-                } 
-                else if (acc.Rating === 'Warm') {
+                } else if (acc.Rating === 'Warm') {
                     badgeClass += ' slds-theme_warning';
-                } 
-                else if (acc.Rating === 'Cold') {
+                } else if (acc.Rating === 'Cold') {
                     badgeClass += ' slds-theme_success';
                 }
 
-                return {
-                    ...acc,
-                    badgeClass
-                };
+                return { ...acc, badgeClass };
             });
 
             this.error = undefined;
@@ -52,5 +44,11 @@ export default class AccountList extends LightningElement {
             this.accounts = undefined;
             this.error = error;
         }
+    }
+
+    get showRating() {
+        return this.rating === 'Hot' ||
+               this.rating === 'Warm' ||
+               this.rating === 'Cold';
     }
 }
